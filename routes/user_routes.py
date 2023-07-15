@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
 from uuid import uuid4
