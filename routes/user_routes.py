@@ -1,10 +1,21 @@
 from fastapi import HTTPException, APIRouter
+from fastapi.responses import RedirectResponse
 from models.user_model import User
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
 from uuid import uuid4
 
 UsersRouter = APIRouter()
+
+# Redirection to documentation page
+@UsersRouter.get("/",include_in_schema=False)
+async def redirect_to_docs():
+    return RedirectResponse(url='/docs')
+
+# API Status check
+@UsersRouter.get("/status",include_in_schema=False)
+async def status():
+    return {"status":"ok"}
 
 @UsersRouter.post("/register")
 def register(user: User):
