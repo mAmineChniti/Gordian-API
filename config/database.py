@@ -10,7 +10,8 @@ username = environ.get("USER")
 password = environ.get("PASS")
 database = environ.get("BASE")
 collection = environ.get("COLLECTION")
+host = environ.get("HOST")
 
-client = MongoClient(f"mongodb+srv://{username}:{password}@cluster1.aegzfn6.mongodb.net/?retryWrites=true&w=majority")
+client = MongoClient(f"mongodb+srv://{username}:{password}@{host}")
 db = client[database]
 users_collection = db[collection]
