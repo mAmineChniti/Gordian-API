@@ -4,23 +4,24 @@ from models.user_model import User
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
 from uuid import uuid4
+import asyncio
 
 UsersRouter = APIRouter()
 
 # Redirection to documentation page
-@UsersRouter.get("/",include_in_schema=False)
+@UsersRouter.get("/", include_in_schema=False)
 async def redirect_to_docs():
     return RedirectResponse(url='/docs')
 
 # API Status check
-@UsersRouter.get("/status",include_in_schema=False)
+@UsersRouter.get("/status", include_in_schema=False)
 async def status():
-    return {"status":"ok"}
+    return {"status": "ok"}
 
 @UsersRouter.post("/register")
-def register(user: User):
+async def register(user: User):
     # Check if the username already exists
-    if users_collection.find_one({"username": user.username}):
+    if await users_collection.find_one({"username": user.username}):
         raise HTTPException(status_code=400, detail="Username already exists")
 
     # Hash the password with a stronger encoding
@@ -35,15 +36,15 @@ def register(user: User):
         "username": user.username,
         "password": hashed_password.decode("utf-8")
     }
-    users_collection.insert_one(user_data)
+    await users_collection.insert_one(user_data)
 
     return {"message": "User registered successfully"}
 
 
 @UsersRouter.post("/login")
-def login(user: User):
+async def login(user: User):
     # Retrieve the user from the database
-    stored_user = users_collection.find_one({"username": user.username})
+    stored_user = await users_collection.find_one({"username": user.username})
 
     # Check if the user exists and the password matches
     if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
