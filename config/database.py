@@ -1,11 +1,9 @@
 from pymongo import MongoClient
 from os import environ
 from dotenv import load_dotenv
-from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
 
-dotenv_path = Path('/etc/secrets/.env')
-load_dotenv(dotenv_path=dotenv_path)
+load_dotenv()
 
 username = environ.get("USER")
 password = environ.get("PASS")
