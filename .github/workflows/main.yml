@@ -10,7 +10,7 @@ on:
 
 jobs:
   test_and_deploy:
-    name: Test and Deploy to Render.com
+    name: Setup
     runs-on: ubuntu-latest
 
     steps:
