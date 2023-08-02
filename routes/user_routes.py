@@ -1,10 +1,9 @@
-from fastapi import HTTPException, APIRouter
+from fastapi import HTTPException, APIRouter, status
 from fastapi.responses import RedirectResponse
 from models.user_model import User
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
 from uuid import uuid4
-from starlette import status
 
 UsersRouter = APIRouter()
 
