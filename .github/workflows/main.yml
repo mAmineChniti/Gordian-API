@@ -35,11 +35,11 @@ jobs:
           COLLECTION: ${{ secrets.COLLECTION }}
           HOST: ${{ secrets.HOST }}
           PORT: ${{ secrets.PORT }}
-        run: uvicorn Gordian:app --host 0.0.0.0 --port $PORT
+        run: uvicorn Gordian:app --host 0.0.0.0 --port $PORT &
 
       - name: Test API Deployment
         run: |
-          API_URL="http://0.0.0.0:${{ secrets.PORT }}"
+          API_URL="http://0.0.0.0:${{ secrets.PORT }}/status"
           STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" $API_URL)
           if [ $STATUS_CODE -eq 200 ]; then
             echo "API is deployed and responding with status code 200 (OK)"
