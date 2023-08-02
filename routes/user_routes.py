@@ -4,7 +4,7 @@ from models.user_model import User
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
 from uuid import uuid4
-import asyncio
+from starlette import status
 
 UsersRouter = APIRouter()
 
@@ -18,11 +18,11 @@ async def redirect_to_docs():
 async def status():
     return {"status": "ok"}
 
-@UsersRouter.post("/register")
+@UsersRouter.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(user: User):
     # Check if the username already exists
     if await users_collection.find_one({"username": user.username}):
-        raise HTTPException(status_code=400, detail="Username already exists")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
 
     # Hash the password with a stronger encoding
     hashed_password = hashpw(user.password.encode("utf-8"), gensalt(rounds=12, prefix=b"2b"))
@@ -40,7 +40,6 @@ async def register(user: User):
 
     return {"message": "User registered successfully"}
 
-
 @UsersRouter.post("/login")
 async def login(user: User):
     # Retrieve the user from the database
@@ -48,6 +47,6 @@ async def login(user: User):
 
     # Check if the user exists and the password matches
     if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
 
     return {"uuid": stored_user["_id"]}
