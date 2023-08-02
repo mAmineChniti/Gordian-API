@@ -8,7 +8,7 @@ from uuid import uuid4
 UsersRouter = APIRouter()
 
 # Redirection to documentation page
-@UsersRouter.get("/", include_in_schema=False)
+@UsersRouter.get("/", include_in_schema=False, status_code=308)
 async def redirect_to_docs():
     return RedirectResponse(url='/docs')
 
