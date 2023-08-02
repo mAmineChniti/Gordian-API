@@ -15,37 +15,50 @@ async def redirect_to_docs():
 # API Status check
 @UsersRouter.get("/status", include_in_schema=False, status_code=200)
 async def status():
-    return {"status": "ok"}
+    try:
+        return {"status": "ok"}
+    except Exception as e:
+        # Handle the exception properly and return an error response
+        raise HTTPException(status_code=500, detail=str(e))
 
 @UsersRouter.post("/register", status_code=201)
 async def register(user: User):
-    # Check if the username already exists
-    if await users_collection.find_one({"username": user.username}):
-        raise HTTPException(status_code=400, detail="Username already exists")
+    try:
+        # Check if the username already exists
+        if await users_collection.find_one({"username": user.username}):
+            raise HTTPException(status_code=400, detail="Username already exists")
 
-    # Hash the password with a stronger encoding
-    hashed_password = hashpw(user.password.encode("utf-8"), gensalt(rounds=12, prefix=b"2b"))
+        # Hash the password with a stronger encoding
+        hashed_password = hashpw(user.password.encode("utf-8"), gensalt(rounds=12, prefix=b"2b"))
 
-    # Generate UUID for the user
-    user_id = str(uuid4())
+        # Generate UUID for the user
+        user_id = str(uuid4())
 
-    # Save the user in the database
-    user_data = {
-        "_id": user_id,
-        "username": user.username,
-        "password": hashed_password.decode("utf-8")
-    }
-    await users_collection.insert_one(user_data)
+        # Save the user in the database
+        user_data = {
+            "_id": user_id,
+            "username": user.username,
+            "password": hashed_password.decode("utf-8")
+        }
+        await users_collection.insert_one(user_data)
 
-    return {"message": "User registered successfully"}
+        return {"message": "User registered successfully"}
+    except Exception as e:
+        # Handle the exception properly and return an error response
+        raise HTTPException(status_code=500, detail=str(e))
 
-@UsersRouter.post("/login", status_code=202)
+@UsersRouter.post("/login", status_code=200)
 async def login(user: User):
-    # Retrieve the user from the database
-    stored_user = await users_collection.find_one({"username": user.username})
+    try:
+        # Retrieve the user from the database
+        stored_user = await users_collection.find_one({"username": user.username})
 
-    # Check if the user exists and the password matches
-    if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+        # Check if the user exists and the password matches
+        if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    return {"uuid": stored_user["_id"]}
+        return {"uuid": stored_user["_id"]}
+
+    except Exception as e:
+        # Handle the exception properly and return an error response
+        raise HTTPException(status_code=500, detail=str(e))
