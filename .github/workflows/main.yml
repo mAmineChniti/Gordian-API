@@ -1,0 +1,49 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Test on Python 3.11
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy and Test API
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
+          BASE: ${{ secrets.BASE }}
+          COLLECTION: ${{ secrets.COLLECTION }}
+          HOST: ${{ secrets.HOST }}
+          PORT: ${{ secrets.PORT }}
+        run: uvicorn Gordian:app --host 0.0.0.0 --port $PORT
+
+      - name: Test API Deployment
+        run: |
+          API_URL="http://0.0.0.0:${{ secrets.PORT }}"
+          STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" $API_URL)
+          if [ $STATUS_CODE -eq 200 ]; then
+            echo "API is deployed and responding with status code 200 (OK)"
+          else
+            echo "Error: API deployment failed. Received status code: $STATUS_CODE"
+            exit 1
+          fi
