@@ -1,5 +1,6 @@
 from fastapi import HTTPException, APIRouter, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.encoders import jsonable_encoder
 from models.user_model import User
 from config.database import users_collection
 from bcrypt import hashpw, gensalt, checkpw
@@ -56,8 +57,8 @@ async def login(user: User):
         # Check if the user exists and the password matches
         if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
             raise HTTPException(status_code=401, detail="Invalid username or password")
-
-        return {"uuid": stored_user["_id"]}
+        json_user = jsonable_encoder(stored_user)
+        return JSONResponse(content=json_user)
 
     except Exception as e:
         # Handle the exception properly and return an error response
