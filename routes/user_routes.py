@@ -57,6 +57,7 @@ async def login(user: User):
         # Check if the user exists and the password matches
         if not stored_user or not checkpw(user.password.encode("utf-8"), stored_user["password"].encode("utf-8")):
             raise HTTPException(status_code=401, detail="Invalid username or password")
+        stored_user.pop("password")
         json_user = jsonable_encoder(stored_user)
         return JSONResponse(content=json_user)
 
