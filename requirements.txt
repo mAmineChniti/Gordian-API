@@ -1,6 +1,7 @@
-fastapi
-python-dotenv
-uvicorn
-pydantic
-bcrypt
-motor
+bcrypt==4.0.1
+fastapi==0.101.0
+motor==3.2.0
+pydantic==2.1.1
+pydantic_core==2.4.0
+python-dotenv==1.0.0
+uvicorn==0.23.2
