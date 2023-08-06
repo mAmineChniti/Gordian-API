@@ -10,5 +10,5 @@ VENV = venv
 all:
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m venv $(VENV)
-	./venv/bin/activate
+	./$(VENV)/bin/activate
 	$(VENV)/bin/pip install -r requirements.txt
