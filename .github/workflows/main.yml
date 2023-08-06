@@ -34,7 +34,7 @@ jobs:
           COLLECTION: ${{ secrets.COLLECTION }}
           HOST: ${{ secrets.HOST }}
           PORT: ${{ secrets.PORT }}
-        run: uvicorn Gordian:app --host 0.0.0.0 --port $PORT &
+        run: venv/bin/uvicorn Gordian:app --host 0.0.0.0 --port $PORT &
 
       - name: Test API Deployment
         run: |
